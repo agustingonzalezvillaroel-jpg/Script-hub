@@ -1,25 +1,124 @@
 
---[[
-    SCRIPT HUB
-    Server Eggs
-    Creador: ScriptHub
-]]
+-- SCRIPT HUB | Catálogo de huevos
+-- Base para Roblox Studio
 
-local nombre = "SCRIPT HUB"
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
-if game.PlaceId ~= 107778070777162 then
-    warn(nombre .. ": juego no compatible")
-    return
+local eggs = {
+    {name = "T-Rex Egg", rarity = "Legendario", value = 100000},
+    {name = "Eternal Phoenix Egg", rarity = "Mítico", value = 250000},
+    {name = "Yeti Egg", rarity = "Épico", value = 50000},
+    {name = "Cherry Blossom Egg", rarity = "Raro", value = 15000},
+}
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "SCRIPT HUB"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 310, 0, 370)
+frame.Position = UDim2.new(0.5, -155, 0.5, -185)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 45)
+title.BackgroundColor3 = Color3.fromRGB(110, 60, 220)
+title.Text = "SCRIPT HUB | EGG FINDER"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
+
+local search = Instance.new("TextBox")
+search.Position = UDim2.new(0, 10, 0, 55)
+search.Size = UDim2.new(1, -20, 0, 35)
+search.PlaceholderText = "Buscar huevo..."
+search.Text = ""
+search.TextScaled = true
+search.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+search.TextColor3 = Color3.new(1, 1, 1)
+search.Parent = frame
+
+local filter = Instance.new("TextButton")
+filter.Position = UDim2.new(0, 10, 0, 98)
+filter.Size = UDim2.new(1, -20, 0, 32)
+filter.Text = "Rareza: Todas"
+filter.TextScaled = true
+filter.BackgroundColor3 = Color3.fromRGB(60, 50, 85)
+filter.TextColor3 = Color3.new(1, 1, 1)
+filter.Parent = frame
+
+local list = Instance.new("ScrollingFrame")
+list.Position = UDim2.new(0, 10, 0, 140)
+list.Size = UDim2.new(1, -20, 1, -150)
+list.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+list.CanvasSize = UDim2.new(0, 0, 0, 0)
+list.ScrollBarThickness = 6
+list.Parent = frame
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 5)
+layout.Parent = list
+
+local rarities = {"Todas", "Raro", "Épico", "Legendario", "Mítico"}
+local rarityIndex = 1
+
+local function refresh()
+    for _, child in ipairs(list:GetChildren()) do
+        if child:IsA("TextLabel") then
+            child:Destroy()
+        end
+    end
+
+    local query = string.lower(search.Text)
+    local shown = 0
+
+    local sorted = table.clone(eggs)
+    table.sort(sorted, function(a, b)
+        return a.value > b.value
+    end)
+
+    for _, egg in ipairs(sorted) do
+        local matchesName = string.find(
+            string.lower(egg.name), query, 1, true
+        ) ~= nil
+        local matchesRarity =
+            rarities[rarityIndex] == "Todas"
+            or egg.rarity == rarities[rarityIndex]
+
+        if matchesName and matchesRarity then
+            shown += 1
+
+            local item = Instance.new("TextLabel")
+            item.Size = UDim2.new(1, -8, 0, 48)
+            item.BackgroundColor3 = Color3.fromRGB(52, 52, 70)
+            item.TextColor3 = Color3.new(1, 1, 1)
+            item.TextScaled = true
+            item.Font = Enum.Font.Gotham
+            item.Text = string.format(
+                "%s | %s | Valor: %s",
+                egg.name, egg.rarity, tostring(egg.value)
+            )
+            item.Parent = list
+        end
+    end
+
+    list.CanvasSize = UDim2.new(0, 0, 0, shown * 53)
 end
 
-print("Iniciando " .. nombre .. "...")
+search:GetPropertyChangedSignal("Text"):Connect(refresh)
 
-local success, err = pcall(function()
-    loadstring(game:HttpGet(
-        "https://raw.githubusercontent.com/apiluarmor-hub/CeboScripts-Egg/refs/heads/main/Server-Eggs.lua"
-    ))()
+filter.MouseButton1Click:Connect(function()
+    rarityIndex = rarityIndex % #rarities + 1
+    filter.Text = "Rareza: " .. rarities[rarityIndex]
+    refresh()
 end)
 
-if not success then
-    warn(nombre .. ": " .. tostring(err))
-end
+refresh()
