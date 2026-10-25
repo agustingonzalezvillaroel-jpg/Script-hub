@@ -1,13 +1,67 @@
---[[
-    SCRIPT HUB
-    Server Eggs
-    Creador: ScriptHub
-]]
 
-local nombre = "Script Hub"
+-- SCRIPT HUB
+-- Panel personalizado para Roblox
 
-print("Iniciando " .. nombre .. "...")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
-loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/apiluarmor-hub/CeboScripts-Egg/refs/heads/main/Server-Eggs.lua"
-))()
+local gui = Instance.new("ScreenGui")
+gui.Name = "ScriptHub"
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Name = "MainPanel"
+frame.Size = UDim2.new(0, 320, 0, 200)
+frame.Position = UDim2.new(0.5, -160, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 50)
+title.BackgroundColor3 = Color3.fromRGB(105, 65, 220)
+title.BorderSizePixel = 0
+title.Text = "SCRIPT HUB"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 24
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = title
+
+local info = Instance.new("TextLabel")
+info.Size = UDim2.new(1, -20, 0, 55)
+info.Position = UDim2.new(0, 10, 0, 65)
+info.BackgroundTransparency = 1
+info.Text = "Bienvenido a Script Hub"
+info.TextColor3 = Color3.fromRGB(230, 230, 240)
+info.TextSize = 16
+info.Font = Enum.Font.Gotham
+info.Parent = frame
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(1, -30, 0, 35)
+close.Position = UDim2.new(0, 15, 1, -45)
+close.BackgroundColor3 = Color3.fromRGB(55, 55, 70)
+close.Text = "Cerrar"
+close.TextColor3 = Color3.new(1, 1, 1)
+close.TextSize = 15
+close.Font = Enum.Font.GothamBold
+close.Parent = frame
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 8)
+buttonCorner.Parent = close
+
+close.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+gui.Parent = player:WaitForChild("PlayerGui")
